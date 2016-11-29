@@ -7,7 +7,7 @@ include_once './src/connection.php';
 if (!isset($_SESSION['loggedUserId'])) {
     header('Location: login.php');
 } else {
-            
+
     $userId = $_SESSION['loggedUserId'];
     $loadedUser = User::loadUserById($conn, $userId);
     $loadedUserName = $loadedUser->getUsername();
@@ -41,19 +41,23 @@ if (!isset($_SESSION['loggedUserId'])) {
             } else {
                 echo 'Typed passwords are not the same';
             }
-        }        
+        }
         if ($loadedUser->saveToDB($conn)) {
             //echo "Dane zaaktualizowane";
         } else {
             echo 'Blad przy aktualizacji danych';
         }
-        
+
         if ($_POST['delete'] == true) {
-            $loadedUser->delete($conn);
-            unset($_SESSION['loggedUserId']);
-            header('Location: login.php');
+            $response = $loadedUser->delete($conn);
+            if ($response == true) {
+                unset($_SESSION['loggedUserId']);
+                header('Location: login.php');
+            } else {
+                echo "Blad przy usuwaniu uzytkownika. Error: " . $conn->error;
+            }
         }
-    }    
+    }
 }
 
 
